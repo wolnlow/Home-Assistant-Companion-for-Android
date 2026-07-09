@@ -41,8 +41,13 @@ jobs:
         run: |
           set -euxo pipefail
           echo "sdk.dir=$ANDROID_HOME" > local.properties
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager \
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER="$(find "$ANDROID_HOME" -path '*/bin/sdkmanager' -type f | head -n 1)"
+          fi
+          "$SDKMANAGER" --version
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" \
             'platforms;android-37.0' \
             'build-tools;36.0.0' \
             'ndk;29.0.14206865' \
